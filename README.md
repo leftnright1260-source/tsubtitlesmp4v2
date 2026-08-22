@@ -1,6 +1,6 @@
-# 🎬 Text-to-Subtitles MP4 Generator
+# 🎬 GABRIEL'S WORK Text to Subtitles MP4 v2.0.0
 
-Create green-screen MP4 subtitle videos from plain text in **76 languages**.
+Create Full HD (16:9) and Vertical (9:16) green-screen MP4 subtitle videos from plain text in 76 languages with automated reading speed calculations.
 
 Text-to-Subtitles MP4 Generator automatically calculates reading time from your text, lets you adjust the reading pace by **±50%**, provides a live preview, and exports **Full HD 1920×1080** and **Vertical 9:16** MP4 videos ready for use in video editors.
 
