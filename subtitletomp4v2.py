@@ -126,7 +126,7 @@ FORMATOS_VIDEO = {
 class SimuladorSubtitulos:
     def __init__(self, root):
         self.root = root
-        self.root.title("Control Panel - Subtitles Pro")
+        self.root.title("GABRIEL'S WORK - Text to Subtitles MP4 v2.0.0")
         self.root.geometry("520x660")
         self.root.resizable(False, False)
 
@@ -277,35 +277,84 @@ class SimuladorSubtitulos:
 
     def mostrar_acerca_de(self):
         ventana_about = tk.Toplevel(self.root)
-        ventana_about.title("About - Subtitles Pro")
-        ventana_about.geometry("380x250")
+        ventana_about.title("About - GABRIEL'S WORK Text to Subtitles MP4 v2.0.0")
+        ventana_about.geometry("480x520")
         ventana_about.resizable(False, False)
         ventana_about.configure(bg="#1a202c")
         
         ventana_about.transient(self.root)
         ventana_about.grab_set()
 
-        tk.Label(ventana_about, text="Subtitles Pro Generator", font=("Segoe UI", 14, "bold"), fg="#ffffff", bg="#1a202c").pack(pady=(20, 5))
-        tk.Label(ventana_about, text="Developed by José Galindo", font=("Segoe UI", 11, "bold"), fg="#319795", bg="#1a202c").pack(pady=2)
-        tk.Label(ventana_about, text="Pro Content Automation Tool", font=("Segoe UI", 9, "italic"), fg="#a0aec0", bg="#1a202c").pack(pady=(0, 15))
+        # Encabezado principal
+        tk.Label(ventana_about, text="GABRIEL'S WORK Text to Subtitles MP4 v2.0.0", font=("Segoe UI", 13, "bold"), fg="#ffffff", bg="#1a202c").pack(pady=(15, 2))
+        tk.Label(ventana_about, text="Developed by José Galindo", font=("Segoe UI", 10, "bold"), fg="#319795", bg="#1a202c").pack(pady=1)
+        tk.Label(ventana_about, text="Pro Content Automation Tool", font=("Segoe UI", 8, "italic"), fg="#a0aec0", bg="#1a202c").pack(pady=(0, 8))
 
+        # ÁREA DESLIZABLE DE TEXTO DE AYUDA
+        frame_texto = ttk.Frame(ventana_about)
+        frame_texto.pack(padx=15, pady=5, fill="both", expand=True)
+
+        scrollbar = ttk.Scrollbar(frame_texto)
+        scrollbar.pack(side="right", fill="y")
+
+        txt_help = tk.Text(
+            frame_texto, 
+            wrap="word", 
+            yscrollcommand=scrollbar.set,
+            font=("Segoe UI", 9),
+            bg="#2d3748",
+            fg="#e2e8f0",
+            relief="flat",
+            padx=10,
+            pady=10
+        )
+        txt_help.pack(side="left", fill="both", expand=True)
+        scrollbar.config(command=txt_help.yview)
+
+        contenido_ayuda = """📋 QUICK USER GUIDE & OVERVIEW
+---------------------------------------------------
+Text-to-Subtitles MP4 Generator converts plain text (.txt) files into Full HD (1920x1080) and Vertical (9:16) MP4 green-screen videos with automatically calculated subtitle reading speeds.
+
+✨ Key Features:
+• 76 Supported Languages & Automatic Font Assignment
+• Dual Export Formats: Full HD (16:9) & Vertical (9:16)
+• Speed Adjustment (±50%) to fit video timelines
+• Real-time Live Preview with playback controls
+• Automatic punctuation & line break pausing
+• Windows Font Verification before rendering
+• Local 30 FPS MP4 rendering (No internet required)
+
+🛠️ How to Use:
+1. Select your target language from the dropdown menu.
+2. Click 'Select TXT File' to import your text.
+3. Adjust the duration speed slider if needed.
+4. Preview the rendering via the Live Preview controls.
+5. Click 'EXPORT TO MP4 FILE' and choose 16:9 or 9:16.
+
+💡 Creator's Note:
+As a YouTube creator, I needed a faster way to generate subtitles that perfectly match my video timelines. That inspired me to build this tool. If you'd like to check out my YouTube videos and articles, feel free to visit my multi-language website via the button below!"""
+
+        txt_help.insert("1.0", contenido_ayuda)
+        txt_help.config(state="disabled")
+
+        # PIE DE PÁGINA Y ENLACE CLICKEABLE
         btn_web = tk.Button(
             ventana_about, 
             text="🌐 Visit GABRIELS.WORK", 
-            font=("Segoe UI", 10, "bold"), 
+            font=("Segoe UI", 9, "bold"), 
             bg="#319795", 
             fg="white", 
             activebackground="#2b6cb0", 
             activeforeground="white",
             relief="flat", 
             padx=12, 
-            pady=6, 
+            pady=5, 
             command=lambda: webbrowser.open("https://gabriels.work"), 
             cursor="hand2"
         )
-        btn_web.pack(pady=10)
-        tk.Label(ventana_about, text="© All rights reserved", font=("Segoe UI", 8), fg="#718096", bg="#1a202c").pack(side="bottom", pady=10)
-
+        btn_web.pack(pady=(8, 2))
+        
+        tk.Label(ventana_about, text="© 2026 José Galindo. All rights reserved.", font=("Segoe UI", 8), fg="#718096", bg="#1a202c").pack(side="bottom", pady=(0, 8))
     def al_cambiar_formato(self, event=None):
         fmt_info = FORMATOS_VIDEO.get(self.combo_formato.get())
         if fmt_info:
