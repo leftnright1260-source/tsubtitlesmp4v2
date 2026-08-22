@@ -10,6 +10,7 @@ import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
+# CONFIGURACIÓN ORIGINAL DE V1 RESTAURADA
 CONFIG_IDIOMAS = {
     "KOREAN": {
         "fuente_archivo": "malgun.ttf", 
@@ -120,13 +121,13 @@ SIGNOS_COMA = [',', ';', '，', '；', '،', '、']
 
 FORMATOS_VIDEO = {
     "16:9 Horizontal (1920x1080)": {"res": (1920, 1080), "preview": "1000x562", "width_factor": 1.0},
-    "9:16 Vertical (1080x1920)": {"res": (1080, 1920), "preview": "450x800", "width_factor": 0.5}
+    "9:16 Vertical (1080x1920)": {"res": (1080, 1920), "preview": "450x800", "width_factor": 0.70}
 }
 
 class SimuladorSubtitulos:
     def __init__(self, root):
         self.root = root
-        self.root.title("GABRIEL'S WORK - Text to Subtitles MP4 v2.0.0")
+        self.root.title("GABRIEL'S WORK - Text to Subtitles MP4 v2.0.1")
         self.root.geometry("520x660")
         self.root.resizable(False, False)
 
@@ -149,6 +150,7 @@ class SimuladorSubtitulos:
         self.font_files = "segoeui.ttf"
         self.font_size = 28
         self.font_size_mp4 = 60
+        self.font_size_mp4_actual = 60
         self.ancho_linea_base = 45
         self.ancho_linea = 45
 
@@ -277,7 +279,7 @@ class SimuladorSubtitulos:
 
     def mostrar_acerca_de(self):
         ventana_about = tk.Toplevel(self.root)
-        ventana_about.title("About - GABRIEL'S WORK Text to Subtitles MP4 v2.0.0")
+        ventana_about.title("About - GABRIEL'S WORK Text to Subtitles MP4 v2.0.1")
         ventana_about.geometry("480x520")
         ventana_about.resizable(False, False)
         ventana_about.configure(bg="#1a202c")
@@ -285,12 +287,10 @@ class SimuladorSubtitulos:
         ventana_about.transient(self.root)
         ventana_about.grab_set()
 
-        # Encabezado principal
-        tk.Label(ventana_about, text="GABRIEL'S WORK Text to Subtitles MP4 v2.0.0", font=("Segoe UI", 13, "bold"), fg="#ffffff", bg="#1a202c").pack(pady=(15, 2))
+        tk.Label(ventana_about, text="GABRIEL'S WORK Text to Subtitles MP4 v2.0.1", font=("Segoe UI", 13, "bold"), fg="#ffffff", bg="#1a202c").pack(pady=(15, 2))
         tk.Label(ventana_about, text="Developed by José Galindo", font=("Segoe UI", 10, "bold"), fg="#319795", bg="#1a202c").pack(pady=1)
         tk.Label(ventana_about, text="Pro Content Automation Tool", font=("Segoe UI", 8, "italic"), fg="#a0aec0", bg="#1a202c").pack(pady=(0, 8))
 
-        # ÁREA DESLIZABLE DE TEXTO DE AYUDA
         frame_texto = ttk.Frame(ventana_about)
         frame_texto.pack(padx=15, pady=5, fill="both", expand=True)
 
@@ -318,6 +318,7 @@ Text-to-Subtitles MP4 Generator converts plain text (.txt) files into Full HD (1
 ✨ Key Features:
 • 76 Supported Languages & Automatic Font Assignment
 • Dual Export Formats: Full HD (16:9) & Vertical (9:16)
+• Auto-fitting Font Engine (prevents text clipping on vertical videos)
 • Speed Adjustment (±50%) to fit video timelines
 • Real-time Live Preview with playback controls
 • Automatic punctuation & line break pausing
@@ -337,7 +338,6 @@ As a YouTube creator, I needed a faster way to generate subtitles that perfectly
         txt_help.insert("1.0", contenido_ayuda)
         txt_help.config(state="disabled")
 
-        # PIE DE PÁGINA Y ENLACE CLICKEABLE
         btn_web = tk.Button(
             ventana_about, 
             text="🌐 Visit GABRIELS.WORK", 
@@ -355,10 +355,17 @@ As a YouTube creator, I needed a faster way to generate subtitles that perfectly
         btn_web.pack(pady=(8, 2))
         
         tk.Label(ventana_about, text="© 2026 José Galindo. All rights reserved.", font=("Segoe UI", 8), fg="#718096", bg="#1a202c").pack(side="bottom", pady=(0, 8))
+
     def al_cambiar_formato(self, event=None):
         fmt_info = FORMATOS_VIDEO.get(self.combo_formato.get())
         if fmt_info:
             self.ventana_proyeccion.geometry(fmt_info["preview"])
+            
+            if "9:16" in self.combo_formato.get():
+                self.font_size_mp4_actual = int(self.font_size_mp4 * 0.70)
+            else:
+                self.font_size_mp4_actual = self.font_size_mp4
+
             self.calcular_ancho_linea()
             if self.ruta_archivo:
                 self.preprocesar_texto()
@@ -379,7 +386,11 @@ As a YouTube creator, I needed a faster way to generate subtitles that perfectly
         self.font_family_gui = config_encontrada["nombre_comun"]
         self.font_size = config_encontrada["size"]
         self.font_size_mp4 = config_encontrada.get("size_mp4", 60)
+        self.font_size_mp4_actual = self.font_size_mp4
         self.ancho_linea_base = config_encontrada["width"]
+
+        if "9:16" in self.combo_formato.get():
+            self.font_size_mp4_actual = int(self.font_size_mp4 * 0.70)
 
         self.calcular_ancho_linea()
 
@@ -389,7 +400,7 @@ As a YouTube creator, I needed a faster way to generate subtitles that perfectly
     def calcular_ancho_linea(self):
         fmt_info = FORMATOS_VIDEO.get(self.combo_formato.get(), {})
         factor = fmt_info.get("width_factor", 1.0)
-        self.ancho_linea = max(int(self.ancho_linea_base * factor), 10)
+        self.ancho_linea = max(int(round(self.ancho_linea_base * factor)), 6)
 
     def seleccionar_archivo(self):
         archivo = filedialog.askopenfilename(
@@ -536,7 +547,11 @@ As a YouTube creator, I needed a faster way to generate subtitles that perfectly
             x = self.canvas.winfo_width() / 2
             y = self.canvas.winfo_height() / 2
 
-            fuente_config = (self.font_family_gui, self.font_size, "bold")
+            sz = self.font_size
+            if "9:16" in self.combo_formato.get():
+                sz = int(self.font_size * 0.8)
+
+            fuente_config = (self.font_family_gui, sz, "bold")
             d = 3
 
             self.canvas.create_text(x-d, y-d, text=texto, font=fuente_config, fill="black", justify="center", anchor="center")
@@ -653,24 +668,26 @@ As a YouTube creator, I needed a faster way to generate subtitles that perfectly
                 f"4. Restart this application and try exporting again."
             )
             messagebox.showerror("Font Verification Failed", msg_error)
-            return None
+            return None, None
 
         try:
             if ruta_fuente.lower().endswith(".ttc"):
                 try:
-                    return ImageFont.truetype(ruta_fuente, tamano_px, index=0)
+                    font_obj = ImageFont.truetype(ruta_fuente, tamano_px, index=0)
                 except Exception:
-                    return ImageFont.truetype(ruta_fuente, tamano_px, index=1)
+                    font_obj = ImageFont.truetype(ruta_fuente, tamano_px, index=1)
             else:
-                return ImageFont.truetype(ruta_fuente, tamano_px)
+                font_obj = ImageFont.truetype(ruta_fuente, tamano_px)
+            return font_obj, ruta_fuente
         except Exception as e:
             messagebox.showerror("Font Error", f"Unable to load font file:\n{e}")
-            return None
+            return None, None
 
     def exportar_mp4(self):
         if not self.bloques_subtitulos: return
 
-        fuente_validada = self.verificar_o_buscar_fuente(self.font_size_mp4)
+        tamano_base = getattr(self, 'font_size_mp4_actual', self.font_size_mp4)
+        fuente_validada, ruta_fuente = self.verificar_o_buscar_fuente(tamano_base)
         if fuente_validada is None:
             return
 
@@ -687,9 +704,9 @@ As a YouTube creator, I needed a faster way to generate subtitles that perfectly
         self.btn_cargar.configure(state="disabled")
         self.slider_ritmo.configure(state="disabled")
 
-        threading.Thread(target=self._proceso_render_mp4, args=(ruta_salida, fuente_validada), daemon=True).start()
+        threading.Thread(target=self._proceso_render_mp4, args=(ruta_salida, ruta_fuente), daemon=True).start()
 
-    def _proceso_render_mp4(self, ruta_salida, fuente):
+    def _proceso_render_mp4(self, ruta_salida, ruta_fuente):
         fmt_info = FORMATOS_VIDEO.get(self.combo_formato.get(), {"res": (1920, 1080)})
         ANCHO, ALTO = fmt_info["res"]
         COLOR_FONDO = (18, 110, 71)
@@ -704,6 +721,7 @@ As a YouTube creator, I needed a faster way to generate subtitles that perfectly
             out = cv2.VideoWriter(ruta_salida, fourcc, float(FPS), (ANCHO, ALTO))
 
         d_sombra = 4
+        max_ancho_permitido = int(ANCHO * 0.88)
 
         for idx, bloque in enumerate(self.bloques_subtitulos):
             texto_acumulado = ""
@@ -714,20 +732,39 @@ As a YouTube creator, I needed a faster way to generate subtitles that perfectly
                 img = Image.new("RGB", (ANCHO, ALTO), COLOR_FONDO)
                 draw = ImageDraw.Draw(img)
 
-                try:
-                    bbox = draw.multiline_textbbox((0, 0), texto_acumulado, font=fuente, align="center")
-                    text_w = bbox[2] - bbox[0]
-                    text_h = bbox[3] - bbox[1]
-                except Exception:
-                    text_w, text_h = 800, 200
+                tamano_temp = getattr(self, 'font_size_mp4_actual', self.font_size_mp4)
+                
+                while tamano_temp >= 16:
+                    try:
+                        if ruta_fuente.lower().endswith(".ttc"):
+                            try:
+                                fuente_act = ImageFont.truetype(ruta_fuente, tamano_temp, index=0)
+                            except Exception:
+                                fuente_act = ImageFont.truetype(ruta_fuente, tamano_temp, index=1)
+                        else:
+                            fuente_act = ImageFont.truetype(ruta_fuente, tamano_temp)
+                    except Exception:
+                        fuente_act = ImageFont.load_default()
+
+                    try:
+                        bbox = draw.multiline_textbbox((0, 0), texto_acumulado, font=fuente_act, align="center")
+                        text_w = bbox[2] - bbox[0]
+                        text_h = bbox[3] - bbox[1]
+                    except Exception:
+                        text_w, text_h = 800, 200
+
+                    if text_w <= max_ancho_permitido:
+                        break
+                    
+                    tamano_temp -= 2
 
                 x = (ANCHO - text_w) // 2
                 y = (ALTO - text_h) // 2
 
                 for dx, dy in [(-d_sombra,-d_sombra), (d_sombra,-d_sombra), (-d_sombra,d_sombra), (d_sombra,d_sombra)]:
-                    draw.multiline_text((x+dx, y+dy), texto_acumulado, font=fuente, fill="black", align="center")
+                    draw.multiline_text((x+dx, y+dy), texto_acumulado, font=fuente_act, fill="black", align="center")
 
-                draw.multiline_text((x, y), texto_acumulado, font=fuente, fill="white", align="center")
+                draw.multiline_text((x, y), texto_acumulado, font=fuente_act, fill="white", align="center")
 
                 frame_cv = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
 
