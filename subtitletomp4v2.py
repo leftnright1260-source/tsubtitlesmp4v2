@@ -10,7 +10,7 @@ import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
-# CONFIGURACIÓN ORIGINAL DE V1 RESTAURADA
+# CONFIGURACIÓN DE IDIOMAS Y FUENTES (SOLO LTR)
 CONFIG_IDIOMAS = {
     "KOREAN": {
         "fuente_archivo": "malgun.ttf", 
@@ -23,18 +23,6 @@ CONFIG_IDIOMAS = {
         "nombre_comun": "Microsoft YaHei", 
         "size": 32, "size_mp4": 60, "width": 18, 
         "idiomas": ["Chinese", "Japanese"]
-    },
-    "ARABIC_PERSIAN_URDU": {
-        "fuente_archivo": "segoeui.ttf", 
-        "nombre_comun": "Segoe UI", 
-        "size": 32, "size_mp4": 60, "width": 38, 
-        "idiomas": ["Arabic", "Persian", "Urdu", "Pashto", "Kurdish", "Punjabi-Pakistan"]
-    },
-    "HEBREW": {
-        "fuente_archivo": "segoeui.ttf", 
-        "nombre_comun": "Segoe UI", 
-        "size": 32, "size_mp4": 60, "width": 38, 
-        "idiomas": ["Hebrew"]
     },
     "LEELAWADEE_SCRIPTS": {
         "fuente_archivo": [
@@ -104,11 +92,11 @@ CONFIG_IDIOMAS = {
 
 LISTA_IDIOMAS = sorted([
     "Spanish", "English", "Italian", "French", "Portuguese", "German", "Polish", "Ukrainian",
-    "Russian", "Dutch", "Chinese", "Japanese", "Korean", "Arabic", "Turkish", "Persian",
-    "Indonesian", "Bengali", "Urdu", "Filipino", "Vietnamese", "Hindi", "Swahili", "Romanian",
-    "Punjabi-Pakistan", "Punjabi-India", "Telugu", "Malay", "Tamil", "Hausa", "Thai",
-    "Greek", "Yoruba", "Pashto", "Sundanese", "Kurdish", "Burmese", "Amharic", "Nepali",
-    "Zulu", "Afrikaans", "Hungarian", "Serbian", "Czech", "Swedish", "Hebrew", "Bulgarian",
+    "Russian", "Dutch", "Chinese", "Japanese", "Korean", "Turkish",
+    "Indonesian", "Bengali", "Filipino", "Vietnamese", "Hindi", "Swahili", "Romanian",
+    "Punjabi-India", "Telugu", "Malay", "Tamil", "Hausa", "Thai",
+    "Greek", "Yoruba", "Sundanese", "Burmese", "Amharic", "Nepali",
+    "Zulu", "Afrikaans", "Hungarian", "Serbian", "Czech", "Swedish", "Bulgarian",
     "Albanian", "Belarusian", "Armenian", "Croatian", "Danish", "Mongolian", "Finnish", "Slovak",
     "Norwegian", "Lombard", "Bosnian", "Lithuanian", "Pangasinan", "Macedonian", "Slovenian",
     "Galician", "Irish", "Estonian", "Latin", "Catalan", "Marathi", "Sinhala", "Gujarati",
@@ -116,8 +104,8 @@ LISTA_IDIOMAS = sorted([
 ])
 
 FPS = 30
-SIGNOS_PUNTO = ['.', '?', '!', ':', '。', '？', '！', '।', '؟']
-SIGNOS_COMA = [',', ';', '，', '；', '،', '、']
+SIGNOS_PUNTO = ['.', '?', '!', ':', '。', '!', '।']
+SIGNOS_COMA = [',', ';', '，', '；', '、']
 
 FORMATOS_VIDEO = {
     "16:9 Horizontal (1920x1080)": {"res": (1920, 1080), "preview": "1000x562", "width_factor": 1.0},
@@ -127,7 +115,7 @@ FORMATOS_VIDEO = {
 class SimuladorSubtitulos:
     def __init__(self, root):
         self.root = root
-        self.root.title("GABRIEL'S WORK - Text to Subtitles MP4 v2.0.1")
+        self.root.title("GABRIEL'S WORK - Text to Subtitles MP4 v2.1")
         self.root.geometry("520x660")
         self.root.resizable(False, False)
 
@@ -279,7 +267,7 @@ class SimuladorSubtitulos:
 
     def mostrar_acerca_de(self):
         ventana_about = tk.Toplevel(self.root)
-        ventana_about.title("About - GABRIEL'S WORK Text to Subtitles MP4 v2.0.1")
+        ventana_about.title("About - GABRIEL'S WORK Text to Subtitles MP4 v2.1")
         ventana_about.geometry("480x520")
         ventana_about.resizable(False, False)
         ventana_about.configure(bg="#1a202c")
@@ -287,7 +275,7 @@ class SimuladorSubtitulos:
         ventana_about.transient(self.root)
         ventana_about.grab_set()
 
-        tk.Label(ventana_about, text="GABRIEL'S WORK Text to Subtitles MP4 v2.0.1", font=("Segoe UI", 13, "bold"), fg="#ffffff", bg="#1a202c").pack(pady=(15, 2))
+        tk.Label(ventana_about, text="GABRIEL'S WORK Text to Subtitles MP4 v2.1", font=("Segoe UI", 13, "bold"), fg="#ffffff", bg="#1a202c").pack(pady=(15, 2))
         tk.Label(ventana_about, text="Developed by José Galindo", font=("Segoe UI", 10, "bold"), fg="#319795", bg="#1a202c").pack(pady=1)
         tk.Label(ventana_about, text="Pro Content Automation Tool", font=("Segoe UI", 8, "italic"), fg="#a0aec0", bg="#1a202c").pack(pady=(0, 8))
 
@@ -316,7 +304,7 @@ class SimuladorSubtitulos:
 Text-to-Subtitles MP4 Generator converts plain text (.txt) files into Full HD (1920x1080) and Vertical (9:16) MP4 green-screen videos with automatically calculated subtitle reading speeds.
 
 ✨ Key Features:
-• 76 Supported Languages & Automatic Font Assignment
+• Wide Language Support & Automatic Font Assignment
 • Dual Export Formats: Full HD (16:9) & Vertical (9:16)
 • Auto-fitting Font Engine (prevents text clipping on vertical videos)
 • Speed Adjustment (±50%) to fit video timelines
